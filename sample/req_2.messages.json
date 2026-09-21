@@ -1,0 +1,73 @@
+{
+  "model": "claude-sonnet-4-6",
+  "stream": true,
+  "messages": [
+    {
+      "role": "user",
+      "content": [
+        {
+          "type": "text",
+          "text": "Read a.txt and b.txt and tell me what they say."
+        },
+        {
+          "type": "text",
+          "text": "<turn_meta>\nCurrent local date: 2026-09-21\nCurrent workspace: C:\\Users\\<user>\\codewhaleParallelToolRepro\\work\nCurrent permission posture: Full Access\nCurrent sandbox posture: full access (sandbox disabled)\n## Repo Working Set\nActive paths (prioritize these):\n- a.txt (file)\n- b.txt (file)\nWhen in doubt, use tools to verify and keep changes focused on the working set.\n</turn_meta>"
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "content": [
+        {
+          "type": "text",
+          "text": "I will read both files in parallel."
+        },
+        {
+          "type": "tool_use",
+          "id": "toolu_repro_1_a",
+          "name": "read",
+          "input": {
+            "path": "a.txt"
+          }
+        },
+        {
+          "type": "tool_use",
+          "id": "toolu_repro_1_b",
+          "name": "read",
+          "input": {
+            "path": "b.txt"
+          }
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "content": [
+        {
+          "type": "tool_result",
+          "tool_use_id": "toolu_repro_1_b",
+          "content": "tool call was not executed",
+          "is_error": true
+        },
+        {
+          "type": "tool_result",
+          "tool_use_id": "toolu_repro_1_a",
+          "content": "content of file A"
+        }
+      ]
+    },
+    {
+      "role": "user",
+      "content": [
+        {
+          "type": "tool_result",
+          "tool_use_id": "toolu_repro_1_b",
+          "content": "content of file B",
+          "cache_control": {
+            "type": "ephemeral"
+          }
+        }
+      ]
+    }
+  ]
+}
