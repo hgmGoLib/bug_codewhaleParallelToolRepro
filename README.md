@@ -51,6 +51,16 @@ another build (e.g. one built from source) pass it explicitly:
 `cargo run -- /path/to/codewhale` works; only Windows was verified.
 
 Exit code: `1` = bug reproduced, `0` = history is correct, `2` = setup problem.
+So when the bug is present, `cargo run` ends with
+`error: process didn't exit successfully: ... (exit code: 1)` - that is the expected result.
+
+Notes from the verified run (Windows 11, npm 11.19.0, Git for Windows, rustc 1.98.1
+`stable-x86_64-pc-windows-gnu` installed by step 2):
+
+- npm 11 prints `npm warn install-scripts ... codewhale@0.9.13 (postinstall ...)`; the
+  codewhale binary was still downloaded to the path above, the warning can be ignored.
+- `rustup-init` says "you may need to restart your current shell"; the `set PATH=...` line
+  in step 2 makes that unnecessary.
 
 What `src/main.rs` does:
 
@@ -86,8 +96,13 @@ What `src/main.rs` does:
 
 ## Actual result (real run, codewhale 0.9.13)
 
+Output of `cargo run` from step 3 (cargo's own build lines omitted):
+
 ```
+codewhale binary: C:\Users\<user>\AppData\Roaming\npm\node_modules\codewhale\bin\downloads\codewhale.exe
 codewhale 0.9.13 (a0b81f619b66)
+fake Anthropic Messages API: http://127.0.0.1:55526
+temp dir: C:\Users\<user>\AppData\Local\Temp\codewhale-parallel-tool-repro-3784
 POST /v1/messages req_1: stream=true messages=1 tools=11
 POST /v1/messages req_2: stream=true messages=4 tools=11
 codewhale exited: exit code: 0
@@ -101,6 +116,8 @@ requests received: 2
 [req_2]     messages[3] is_error=false content="content of file B"
 
 >>> BUG REPRODUCED: a tool call that was executed also got a 'tool call was not executed' placeholder result (contradictory history sent to the model)
+request bodies + codewhale.log: C:\Users\<user>\AppData\Local\Temp\codewhale-parallel-tool-repro-3784
+error: process didn't exit successfully: `target\debug\codewhale-parallel-tool-repro.exe` (exit code: 1)
 ```
 
 `messages` of req_2 exactly as Codewhale sent them (full file: `sample/req_2.messages.json`;
